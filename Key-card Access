@@ -1,0 +1,150 @@
+--Module script must be placed inside ReplicatedStorage inside a folder called ".modules"
+--Server script must be inside ServerScriptService
+
+--Module Script
+local module = {}
+
+local ts = game:GetService("TweenService")
+
+--Team's Access
+local awardsNightDevTeam = {
+	[1] = {"[DoD] Director of Development", 2462438202, "BestEverArmyplayer"}; 
+
+	[2] = {"[HDev] Head Developer", 1138405815, "huylacroix"}; 
+
+	[3] = {"[VHDev] Vice Head Developer", 623276219, "sojyden"}; 
+
+	[4] = {"[Dev] Developer", 103471115, "YesqIory"}; 
+}
+
+local awardsnightStaffTeam = {
+	[1] = {"[DoA] Director of Awards", 2462438202, "BestEverArmyPlayer"}; 
+
+	[2] = {"[VDoA] Vice Director of Awards", 1800464037, "PatriotsNoble"}; 
+	[3] = {"[VDoA] Vice Director of Awards", 351404157, "GEO_FORNIC"}; 
+
+	[4] = {"[ADoA] Assistant Director of Awards", 1684361194, "troll159cs"}; 
+	[5] = {"[ADoA] Assistant Director of Awards", 903076644, "milanorossonera"}; 
+	[6] = {"[ADoA] Assistant Director of Awards", 4064089306, "ameer217pvp2"}; 
+
+	[7] = {"[S-AS] Senior Awards Staff", 3409965504, "Footnik17"}; 
+	[8] = {"[S-AS] Senior Awards Staff", 3209670478, "Diamondtracker4"}; 
+	[9] = {"[S-AS] Senior Awards Staff", 1695273527, "ahwuiqw1428658"}; 
+	[10] = {"[S-AS] Senior Awards Staff", 173182489, "BattleVox01"}; 
+	[11] = {"[S-AS] Senior Awards Staff", 3030992553, "R1SK1625"}; 
+	[12] = {"[S-AS] Senior Awards Staff", 3209670478, "Diamondtracker4"}; 
+	[13] = {"[S-AS] Senior Awards Staff", 1421438280, "WinterFrostLord"}; 
+	[14] = {"[S-AS] Senior Awards Staff", 351285126, "gabrielcasoy"}; 
+	[15] = {"[S-AS] Senior Awards Staff", 2327140511, "GhoulxXforGold"}; 
+
+	[16] = {"[J-AS] Junior Awards Staff", 3796143628, "IloveBAarmedforces"}; 
+	[17] = {"[J-AS] Junior Awards Staff", 2391220470, "Dzir3d"}; 
+
+	[18] = {"[N-AS] New Awards Staff", 3414340504, "baddieb123321"}; 
+	[19] = {"[N-AS] New Awards Staff", 3513347074, "Forevertours"}; 
+	[20] = {"[N-AS] New Awards Staff", 530828444, "HyperDawnTheFox"}; 
+	[21] = {"[N-AS] New Awards Staff", 3122389814, "xRynZe"}; 
+	[22] = {"[N-AS] New Awards Staff", 1524226445, "2o2oX_X"}; 
+}
+
+function module.showPrompt(player)
+	local allowedAccess = {}
+
+	local function addKeycard(level)
+		if not player.Backpack:FindFirstChild("Level " .. level .. ": Keycard") then
+			local card = game.ServerStorage[".keyCards"]["Level " .. level .. ": Keycard"]:Clone()
+			card.Parent = player.Backpack
+		end
+	end
+
+	local function addSSCard()
+		if not player.Backpack:FindFirstChild("SS: Secret Service Card") then
+			local card = game.ServerStorage[".keyCards"]["SS: Secret Service Card"]:Clone()
+			card.Parent = player.Backpack
+		end
+	end
+
+	local function addSword()
+		if not player.Backpack:FindFirstChild("Sword") then
+			local sword = game.ServerStorage.Sword:Clone()
+			sword.Parent = player.Backpack
+		end
+	end
+
+	local function checkAccess(team)
+		for _, teamEntry in ipairs(team) do
+			if teamEntry[2] == player.UserId then
+				return true
+			end
+		end
+		return false
+	end
+
+	-- Awards Night Developers Access
+	if checkAccess(awardsNightDevTeam) then
+		addKeycard(1)
+		addKeycard(2)
+		addKeycard(3)
+	end
+
+	-- Director of Awards, Vice Director of Awards, Assistant Director of Awards, Chief Awards Staff, Senior Awards Staff, Junior Awards Staff, New Awards Staff
+	if checkAccess(awardsnightStaffTeam) then
+		addKeycard(1)
+		addKeycard(2)
+		addKeycard(3)
+	end
+
+	-- Secret Service, SS Leadership
+	if player:GetRankInGroup(5850576) >= 5 then
+		addSword()
+		addSSCard()
+	end
+
+	-- Secret Service Group
+	if player:GetRankInGroup(5850576) >= 250 then
+		addSword()
+		addSSCard()
+	end
+
+	-- UD Leadership
+	if player:GetRankInGroup(32003999) >= 250 then
+		addSword()
+		addSSCard()
+	end
+
+	-- Board of Staff
+	if player:GetRankInGroup(5677412) == 100 then
+		addKeycard(1)
+	end
+
+	--Board of Directors
+	if player:GetRankInGroup(5677412) == 150 then
+		addKeycard(1)
+		addKeycard(2)
+		addKeycard(3)
+		addSword()
+		addSSCard()
+	end
+	
+	-- Senior Command
+	if player:GetRankInGroup(3054949) >= 250 then
+		addKeycard(1)
+		addKeycard(2)
+		addKeycard(3)
+		addSword()
+		addSSCard()
+	end
+
+	game.ReplicatedStorage[".events"].showPrompt:FireClient(player)
+end
+
+return module
+
+--Server Script
+local module = require(game.ReplicatedStorage:FindFirstChild(".modules").mainmodule)
+
+game.Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function(char)
+		module.showPrompt(player)
+    end)
+end)
